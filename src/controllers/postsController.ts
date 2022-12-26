@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { dataSource } from "../data-source";
 import { Blogs } from "../entities/Blogs";
 import { Users } from "../entities/Users";
+import { Auth } from "../entities/Auth";
 
 async function createPost(req: Request, res: Response) {
   try {
@@ -68,7 +69,12 @@ async function createPost(req: Request, res: Response) {
 async function getBlogByID(req: Request, res: Response) {
   try {
     const blog = await dataSource.getRepository(Blogs).findOne({
-      relations: ["author", "comments"],
+      relations: {
+        author: {
+          profile: true,
+        },
+        comments: true,
+      },
       where: {
         id: parseInt(req.params.id),
       },
@@ -154,6 +160,12 @@ async function updateBlogByID(req: Request, res: Response) {
   }
 }
 
+//to delete a blog
+//first check if the user is authorized
+//then delete the relation in Users table,
+//delete the comments associated with the blog
+//and then delete the blog
+
 async function deletePostByID(req: Request, res: Response) {
   try {
     if (!req.headers.authorization) {
@@ -165,12 +177,27 @@ async function deletePostByID(req: Request, res: Response) {
     const token = req.headers.authorization;
 
     const deletedBlog = await dataSource
-      .getRepository(Users)
+      .getRepository(Blogs)
       .createQueryBuilder("blog")
+      .leftJoinAndSelect("blog.author", "author")
+      .leftJoinAndSelect("author.auth", "auth", "auth.token=:token", {
+        token: token,
+      })
       .delete()
-      .from(Blogs)
-      .where("blog.id=:id", { id: parseInt(req.params.id) })
-      .andWhere("blog.author.auth.token=:token", { token });
+      .where("id=:id", { id: parseInt(req.params.id) })
+      .execute();
+
+    if (!deletedBlog) {
+      return res.status(404).json({
+        message: "Blog not found/Unauthorized",
+      });
+    }
+
+    console.log(deletedBlog);
+
+    res.status(200).json({
+      message: "Blog deleted successfully",
+    });
   } catch (error) {
     res.json(500).json({
       message: "Server error",

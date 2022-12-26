@@ -29,15 +29,15 @@ export class Blogs {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
 
-  @ManyToOne(() => Users, (user) => user.blogs)
-  @JoinColumn()
+  @ManyToOne(() => Users, (user) => user.blogs, {
+    onDelete: "CASCADE",
+  })
   author: Users;
 
   @OneToMany(() => Comments, (comment) => comment.blog, {
     cascade: true,
     nullable: true,
   })
-  @JoinColumn()
   comments: Comments[];
 
   @Column({ nullable: true, type: "simple-array" })

@@ -9,18 +9,22 @@ async function getUserProfileByID(req: Request, res: Response) {
   try {
     const user = await dataSource.getRepository(Users).findOne({
       relations: {
+        blogs: true,
         profile: true,
+        comments: true,
       },
       where: {
         id: parseInt(req.params.id),
       },
     });
+
     if (user) {
-      res.status(200).json(user.profile);
+      res.status(200).json(user);
     } else {
       res.status(404).json({ message: "User not found" });
     }
   } catch (e) {
+    console.log(e);
     res.status(500).json({ message: "Server error", error: e });
   }
 }

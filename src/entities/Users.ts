@@ -5,7 +5,6 @@ import {
   OneToOne,
   JoinColumn,
   OneToMany,
-  Generated,
 } from "typeorm";
 import { Blogs } from "./Blogs";
 import { Comments } from "./Comments";
@@ -30,14 +29,16 @@ export class Users {
   @JoinColumn()
   profile: Profile;
 
-  @OneToMany(() => Blogs, (blog) => blog.id, { cascade: true, nullable: true })
-  @JoinColumn()
-  blogs: Blogs[];
-
-  @OneToMany(() => Comments, (comment) => comment.id, {
+  @OneToMany(() => Blogs, (blog) => blog.author, {
     cascade: true,
     nullable: true,
   })
   @JoinColumn()
+  blogs: Blogs[];
+
+  @OneToMany(() => Comments, (comment) => comment.author, {
+    cascade: true,
+    nullable: true,
+  })
   comments: Comments[];
 }
