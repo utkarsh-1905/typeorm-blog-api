@@ -201,9 +201,34 @@ async function deletePostByID(req: Request, res: Response) {
   } catch (error) {
     res.json(500).json({
       message: "Server error",
-      error,
     });
   }
 }
 
-export { createPost, getBlogByID, updateBlogByID, deletePostByID };
+async function getAllPosts(req: Request, res: Response) {
+  try {
+    //query params for pagination
+    const count: any = req.query.count || "10";
+    const page: any = req.query.page || "1";
+
+    const blogs = await dataSource
+      .getRepository(Blogs)
+      .createQueryBuilder("blog")
+      .leftJoinAndSelect("blog.author", "author")
+      .leftJoinAndSelect("blog.comments", "comments")
+      .orderBy("blog.likes", "DESC")
+      .addOrderBy("blog.created_at", "DESC")
+      .skip((parseInt(page) - 1) * parseInt(count))
+      .take(parseInt(count))
+      .getMany();
+
+    res.status(200).json(blogs);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+}
+
+export { createPost, getBlogByID, updateBlogByID, deletePostByID, getAllPosts };
