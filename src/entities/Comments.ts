@@ -1,25 +1,29 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn} from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from "typeorm";
 import { Blogs } from "./Blogs";
 import { Users } from "./Users";
 
 @Entity()
-export class Comments{
+export class Comments {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Column()
+  content: string;
 
-    @Column()
-    content: string
+  @Column({ type: "timestamp" })
+  created_at: Date;
 
-    @Column({type:"timestamp"})
-    created_at: Date
+  @ManyToOne(() => Blogs, (blog) => blog.comments)
+  @JoinColumn()
+  blog: Blogs;
 
-    @ManyToOne(()=>Blogs, blog=>blog.comments)
-    @JoinColumn()
-    blog: Blogs
-
-    @ManyToOne(()=>Users, user=>user.comments)
-    @JoinColumn()
-    author: Users
-
+  @ManyToOne(() => Users, (user) => user.comments)
+  @JoinColumn()
+  author: Users;
 }

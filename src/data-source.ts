@@ -6,13 +6,13 @@ import { Profile } from "./entities/Profile";
 import { Auth } from "./entities/Auth";
 
 export const dataSource = new DataSource({
-    type:"postgres",
-    host:"localhost",
-    port:5432,
-    username: "postgres",
-    password: "admin",
-    database: "postgres",
-    entities: [Users, Blogs, Comments, Profile, Auth],
-    synchronize: true,
-    logging: true
+  type: "postgres",
+  host: "localhost",
+  port: 5432,
+  username: "postgres",
+  password: "admin",
+  database: "postgres",
+  entities: [Users, Blogs, Comments, Profile, Auth],
+  synchronize: true,
+  logging: true,
 });

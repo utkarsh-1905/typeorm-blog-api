@@ -1,16 +1,14 @@
-import {Entity, Column, PrimaryGeneratedColumn, Generated} from "typeorm"
+import { Entity, Column, PrimaryGeneratedColumn, Generated } from "typeorm";
 
 @Entity()
-export class Auth{
+export class Auth {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @PrimaryGeneratedColumn()
-    id: number
+  @Column()
+  password: string;
 
-    @Column()
-    password: string
-
-    @Column()
-    @Generated("uuid")
-    token: string
-
+  @Column()
+  @Generated("uuid")
+  token: string;
 }
