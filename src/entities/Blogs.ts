@@ -14,20 +14,20 @@ export class Blogs{
     @Column({length: 5000})
     content: string
 
-    @Column()
+    @Column({default: 0})
     likes: number
 
-    @Column()
+    @Column({default: 0})
     dislikes: number
 
-    @Column({type:"timestamp"})
+    @Column({type:"timestamp", default: () => "CURRENT_TIMESTAMP"})
     created_at: Date
 
     @ManyToOne(()=>Users, user=>user.blogs)
     @JoinColumn()
     author: Users
 
-    @OneToMany(()=>Comments, comment => comment.blog)
+    @OneToMany(()=>Comments, comment => comment.blog,{cascade: true, nullable: true})
     @JoinColumn()
     comments: Comments[]
 

@@ -2,6 +2,7 @@ import {Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, OneToMany,
 import { Blogs } from "./Blogs";
 import { Comments } from "./Comments";
 import { Profile } from "./Profile";
+import { Auth } from "./Auth";
 
 @Entity()
 export class Users{
@@ -14,8 +15,9 @@ export class Users{
     })
     username: string
 
-    @Column()
-    password: string
+    @OneToOne(()=>Auth,{cascade: true})
+    @JoinColumn()
+    auth: Auth
 
     @OneToOne(()=>Profile,{cascade: true})
     @JoinColumn()
@@ -28,9 +30,5 @@ export class Users{
     @OneToMany(()=>Comments, comment=>comment.id, {cascade: true, nullable: true})
     @JoinColumn()
     comments: Comments[]
-
-    @Column()
-    @Generated("uuid")
-    token: string
 
 }

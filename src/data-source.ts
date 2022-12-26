@@ -3,6 +3,7 @@ import { Users } from "./entities/Users";
 import { Blogs } from "./entities/Blogs";
 import { Comments } from "./entities/Comments";
 import { Profile } from "./entities/Profile";
+import { Auth } from "./entities/Auth";
 
 export const dataSource = new DataSource({
     type:"postgres",
@@ -11,7 +12,7 @@ export const dataSource = new DataSource({
     username: "postgres",
     password: "admin",
     database: "postgres",
-    entities: [Users, Blogs, Comments, Profile],
+    entities: [Users, Blogs, Comments, Profile, Auth],
     synchronize: true,
     logging: true
 });
