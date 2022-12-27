@@ -15,3 +15,8 @@
 - Run `npm run build` to build the the typescript project
 - Run `npm start` to start the server in a node environment
 - Additionaly, you can create a docker image of project with `npm run build:image`
+
+
+### Database Schema
+
+![Database Schema(Visualized on DataGrip)](./db-image.png)
