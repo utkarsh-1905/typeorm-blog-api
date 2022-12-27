@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { dataSource } from "../data-source";
 import { Blogs } from "../entities/Blogs";
 import { Users } from "../entities/Users";
-import { Auth } from "../entities/Auth";
 
 async function createPost(req: Request, res: Response) {
   try {
@@ -45,13 +44,15 @@ async function createPost(req: Request, res: Response) {
     let blog = new Blogs();
     blog.title = title;
     blog.content = content;
-    blog.category = category;
     blog.keywords = keywordArray;
     blog.author = user;
     blog.dislikes = 0;
     blog.likes = 0;
     blog.created_at = new Date();
     blog.comments = [];
+    const categoryArray = await category.trim().split(",");
+
+    blog.category = categoryArray;
 
     const savedBlog = await dataSource.getRepository(Blogs).save(blog);
     res.status(200).json({
@@ -128,7 +129,12 @@ async function updateBlogByID(req: Request, res: Response) {
       });
     }
 
-    if (!req.body.title || !req.body.content) {
+    if (
+      !req.body.title ||
+      !req.body.content ||
+      !req.body.keywords ||
+      !req.body.category
+    ) {
       return res.status(400).json({
         message: "Nothing to update",
       });
@@ -141,6 +147,8 @@ async function updateBlogByID(req: Request, res: Response) {
       {
         title: req.body.title,
         content: req.body.content,
+        keywords: req.body.keywords,
+        category: req.body.category,
       }
     );
 
@@ -169,7 +177,29 @@ async function updateBlogByID(req: Request, res: Response) {
 async function deletePostByID(req: Request, res: Response) {
   try {
     if (!req.headers.authorization) {
-      return res.status(401).json({
+      res.status(401).json({
+        message: "Unauthorized",
+      });
+      return;
+    }
+
+    const user = await dataSource.getRepository(Users).findOne({
+      relations: {
+        auth: true,
+        blogs: true,
+      },
+      where: {
+        auth: {
+          token: req.headers.authorization,
+        },
+        blogs: {
+          id: parseInt(req.params.id),
+        },
+      },
+    });
+
+    if (!user) {
+      res.status(401).json({
         message: "Unauthorized",
       });
       return;
@@ -189,18 +219,18 @@ async function deletePostByID(req: Request, res: Response) {
       .execute();
 
     if (!deletedBlog) {
-      return res.status(404).json({
+      res.status(404).json({
         message: "Blog not found/Unauthorized",
       });
+      return;
     }
-
-    console.log(deletedBlog);
 
     res.status(200).json({
       message: "Blog deleted successfully",
     });
   } catch (error) {
-    res.json(500).json({
+    console.log(error);
+    res.status(500).json({
       message: "Server error",
     });
   }
@@ -213,7 +243,7 @@ async function getAllPosts(req: Request, res: Response) {
     const count: any = req.query.count || "10";
     const page: any = req.query.page || "1";
 
-    const blogs = await dataSource
+    let blogs = await dataSource
       .getRepository(Blogs)
       .createQueryBuilder("blog")
       .leftJoinAndSelect("blog.author", "author")
@@ -223,6 +253,14 @@ async function getAllPosts(req: Request, res: Response) {
       .skip((parseInt(page) - 1) * parseInt(count))
       .take(parseInt(count))
       .getMany();
+
+    blogs = blogs.sort((a: Blogs, b: Blogs): number => {
+      if (a.comments.length > b.comments.length) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
 
     res.status(200).json(blogs);
   } catch (error) {

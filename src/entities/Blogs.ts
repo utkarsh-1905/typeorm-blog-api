@@ -8,7 +8,6 @@ import {
 } from "typeorm";
 import { Users } from "./Users";
 import { Comments } from "./Comments";
-
 @Entity()
 export class Blogs {
   @PrimaryGeneratedColumn()
@@ -29,20 +28,18 @@ export class Blogs {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
 
-  @ManyToOne(() => Users, (user) => user.blogs, {
-    onDelete: "CASCADE",
-  })
+  @ManyToOne(() => Users, (user) => user.blogs)
   author: Users;
 
   @OneToMany(() => Comments, (comment) => comment.blog, {
-    cascade: true,
     nullable: true,
   })
+  @JoinColumn()
   comments: Comments[];
 
   @Column({ nullable: true, type: "simple-array" })
   keywords: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "simple-array" })
   category: string;
 }

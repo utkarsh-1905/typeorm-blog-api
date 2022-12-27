@@ -30,14 +30,11 @@ export class Users {
   profile: Profile;
 
   @OneToMany(() => Blogs, (blog) => blog.author, {
-    cascade: true,
     nullable: true,
   })
-  @JoinColumn()
   blogs: Blogs[];
 
   @OneToMany(() => Comments, (comment) => comment.author, {
-    cascade: true,
     nullable: true,
   })
   comments: Comments[];

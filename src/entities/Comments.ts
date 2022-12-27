@@ -19,11 +19,15 @@ export class Comments {
   @Column({ type: "timestamp" })
   created_at: Date;
 
-  @ManyToOne(() => Blogs, (blog) => blog.comments)
+  @ManyToOne(() => Blogs, (blog) => blog.comments, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn()
   blog: Blogs;
 
-  @ManyToOne(() => Users, (user) => user.comments)
+  @ManyToOne(() => Users, (user) => user.comments, {
+    onDelete: "CASCADE",
+  })
   @JoinColumn()
   author: Users;
 }

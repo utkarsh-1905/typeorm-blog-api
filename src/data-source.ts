@@ -14,5 +14,5 @@ export const dataSource = new DataSource({
   database: "postgres",
   entities: [Users, Blogs, Comments, Profile, Auth],
   synchronize: true,
-  logging: true,
+  logging: ["error", "migration"],
 });
