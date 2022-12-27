@@ -40,6 +40,7 @@ export class Blogs {
   @Column({ nullable: true, type: "simple-array" })
   keywords: string;
 
+  //link to a category table
   @Column({ nullable: true, type: "simple-array" })
   category: string;
 }
