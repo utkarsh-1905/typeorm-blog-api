@@ -172,6 +172,7 @@ async function deletePostByID(req: Request, res: Response) {
       return res.status(401).json({
         message: "Unauthorized",
       });
+      return;
     }
 
     const token = req.headers.authorization;
@@ -205,6 +206,7 @@ async function deletePostByID(req: Request, res: Response) {
   }
 }
 
+//re-check for ordering and pagination
 async function getAllPosts(req: Request, res: Response) {
   try {
     //query params for pagination
