@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/app.ts",
     "build": "tsc -p .",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "build:image": "npm run build && docker build -t eazypg-api ."
   },
   "keywords": [],
   "author": "",

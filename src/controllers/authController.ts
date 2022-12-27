@@ -40,6 +40,7 @@ async function signup(req: Request, res: Response) {
       !req.body.phone_number
     ) {
       res.status(400).json({ message: "All fields are required" });
+      return;
     }
     let profile: Profile = new Profile();
     profile.first_name = req.body.first_name;
@@ -77,6 +78,7 @@ async function login(req: Request, res: Response) {
   try {
     if (!req.body.username || !req.body.password) {
       res.status(400).json({ message: "Username and password are required" });
+      return;
     }
     const user = await dataSource.getRepository(Users).findOne({
       relations: ["auth"],
@@ -98,11 +100,14 @@ async function login(req: Request, res: Response) {
           blogs: user.blogs,
           token: user.auth.token,
         });
+        return;
       } else {
         res.status(401).json({ message: "Invalid password" });
+        return;
       }
     } else {
       res.status(404).json({ message: "User not found" });
+      return;
     }
   } catch (e) {
     res.status(500).json({ message: "Server error", error: e });
